@@ -33,7 +33,7 @@ The application can be accessed through the public IP address of the EC2 instanc
 
 The project uses:
 
-* 2 EC2 instances
+* 1 EC2 instances
 * 1 public subnet
 * 1 private subnet
 * Apache Tomcat
