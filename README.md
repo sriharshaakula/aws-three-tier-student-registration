@@ -347,8 +347,3 @@ Through this project, I gained practical experience in:
 Cloud & DevOps Engineer Aspirant
 
 **Skills:** AWS | Linux | Docker | Jenkins | Ansible | Git | CI/CD | Bash
-
-
-
-
-n before publishing the project on GitHub.
