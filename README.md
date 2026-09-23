@@ -10,7 +10,7 @@ The infrastructure is deployed inside a custom Amazon VPC with separate public a
 
 The application can be accessed through the public IP address of the EC2 instance, and submitted student registration data is stored in the RDS MySQL database.
 
-## 🏗️ Architecture
+##  Architecture
 
 `
                          Internet
@@ -57,7 +57,7 @@ The project uses:
 
 ---
 
-## 🔄 Application Flow
+##  Application Flow
 
 User
  │
