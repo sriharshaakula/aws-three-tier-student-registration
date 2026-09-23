@@ -2,221 +2,301 @@
 
 ## 📌 Project Overview
 
-This project demonstrates the deployment of a student registration application on AWS using a multi-tier architecture.
+This project demonstrates the deployment of a student registration application on AWS using a three-tier application architecture.
 
-The application is hosted on Amazon EC2 using Apache Tomcat, while student registration data is stored in an Amazon RDS MySQL database.
+The application is divided into three logical tiers:
 
-The infrastructure is deployed inside a custom Amazon VPC with separate public and private subnets. Security Groups are used to control communication between the application and database components.
+1. **Presentation Tier** – Student registration form
+2. **Application Tier** – Backend business logic running on Apache Tomcat
+3. **Database Tier** – Amazon RDS MySQL
 
-The application can be accessed through the public IP address of the EC2 instance, and submitted student registration data is stored in the RDS MySQL database.
+The application is deployed inside a custom Amazon VPC. The EC2 instance hosting the application is placed in a public subnet, while the RDS MySQL database is placed in a private subnet.
 
-##  Architecture
+Users access the application through the EC2 public IP. The backend processes the registration request and communicates with the RDS MySQL database to store student information.
+
+---
+
+## 🏗️ Architecture
 
 `
+                         USER
+                           │
+                           │ HTTP
+                           ▼
+                ┌─────────────────────┐
+                │  PRESENTATION TIER  │
+                │                     │
+                │ Student Registration│
+                │       Form          │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │  APPLICATION TIER   │
+                │                     │
+                │ EC2 + Apache Tomcat │
+                │ Backend Logic       │
+                └──────────┬──────────┘
+                           │
+                           │ MySQL / TCP 3306
+                           ▼
+                ┌─────────────────────┐
+                │    DATABASE TIER    │
+                │                     │
+                │    RDS MySQL        │
+                │    Private Subnet   │
+                └─────────────────────┘
+
+
+### AWS Infrastructure
+
+
                          Internet
                             │
                             ▼
-                    Public EC2 Instance
+                    ┌───────────────┐
+                    │  Public Subnet│
+                    │               │
+                    │  EC2 Instance │
+                    │  Apache Tomcat│
+                    └───────┬───────┘
                             │
-                     Apache Tomcat
-                            │
-                            │ MySQL : 3306
-                            ▼
-                    Private Subnet
-                            │
-                            ▼
-                       RDS MySQL
+                       TCP 3306
                             │
                             ▼
-                  Student Registration Data
+                    ┌───────────────┐
+                    │ Private Subnet│
+                    │               │
+                    │   RDS MySQL   │
+                    └───────────────┘
 
 
-The project uses:
-
-* 1 EC2 instances
-* 1 public subnet
-* 1 private subnet
-* Apache Tomcat
-* Amazon RDS MySQL
-* Security Groups
-* Amazon VPC
+> The three tiers are logical application layers. The presentation and application tiers run on the same EC2 instance, while the database tier is provided by Amazon RDS.
 
 ---
 
- ☁️ AWS Services Used
+## ☁️ AWS Services Used
 
-| AWS Service      | Purpose                                             |
-| ---------------- | --------------------------------------------------- |
-| Amazon VPC       | Provides the isolated network environment           |
-| Amazon EC2       | Hosts the application and supporting infrastructure |
-| Apache Tomcat    | Hosts the student registration application          |
-| Amazon RDS MySQL | Stores student registration data                    |
-| Security Groups  | Controls network traffic between resources          |
-| Subnets          | Separates public and private resources              |
-| Internet Gateway | Provides internet connectivity to the public subnet |
+| Service              | Purpose                                             |
+| -------------------- | --------------------------------------------------- |
+| **Amazon VPC**       | Provides the isolated network environment           |
+| **Amazon EC2**       | Hosts the application and backend                   |
+| **Apache Tomcat**    | Runs the backend/application                        |
+| **Amazon RDS MySQL** | Stores student registration data                    |
+| **Security Groups**  | Controls network access between resources           |
+| **Subnets**          | Separates public and private resources              |
+| **Internet Gateway** | Provides internet connectivity to the public subnet |
 
 ---
 
-##  Application Flow
+## 🔄 Application Flow
+
+The application works through the following flow:
+
 
 User
- │
- │ HTTP Request
- ▼
-EC2 Public IP
- │
- ▼
-Apache Tomcat
- │
- │ Database Connection
- │ TCP 3306
- ▼
+  │
+  ▼
+Registration Form
+  │
+  ▼
+Backend Logic
+  │
+  ▼
 RDS MySQL
- │
- │ Insert / Retrieve Data
- ▼
-Student Registration Database
+  │
+  ▼
+Student Data Stored
 
-When a user submits the registration form:
+### Step-by-step
 
-1. The request reaches the EC2 instance through its public IP.
-2. Apache Tomcat processes the application request.
-3. The application connects to the RDS MySQL database.
-4. Student information is inserted into the database.
-5. The application returns the response to the user.
+1. The user opens the student registration application.
+2. The registration form collects student information.
+3. The form sends the submitted data to the backend.
+4. The backend logic processes the request.
+5. The backend establishes a connection with Amazon RDS MySQL.
+6. Student information is inserted into the database.
+7. The application returns the result to the user.
 
- Network Architecture
+---
 
-The infrastructure is deployed inside an Amazon VPC.
+## 🌐 AWS Network Architecture
+
+The application is deployed inside a custom Amazon VPC.
 
 ### Public Subnet
 
-The public subnet contains the EC2 instance used to provide access to the application.
+The EC2 instance is deployed in the public subnet.
 
-The instance has public connectivity through the Internet Gateway.
+The EC2 instance provides access to the application through its public IP address.
 
 ### Private Subnet
 
-The private subnet contains the database layer.
+The RDS MySQL database is deployed in the private subnet.
 
-Amazon RDS MySQL is deployed in the private network so that the database is not directly exposed to the internet.
+The database is not directly exposed to the public internet.
 
----
+Communication between the application server and database is controlled using Security Groups.
 
-# Security Configuration
+## 🔐 Security Configuration
 
-AWS Security Groups are used to control traffic between the EC2 application server and the RDS database.
+Security Groups are used to control communication between the EC2 instance and RDS database.
 
-The application server communicates with MySQL using:
+The application communicates with MySQL using:
 
-Protocol: TCP
-Port: 3306
+Protocol : TCP
+Port     : 3306
 
- The database access is restricted through Security Group rules rather than allowing unrestricted internet access.
+
+The RDS Security Group allows database traffic from the application server rather than allowing unrestricted access from the internet.
 
 ### Security Flow
 
-text
-EC2 Security Group
-        │
-        │ TCP 3306
-        ▼
-RDS Security Group
 
-This allows the application to communicate with the database while keeping the database layer private.
+EC2
+ │
+ │ TCP 3306
+ ▼
+RDS MySQL
 
---
 
-# Application Deployment
-
-The student registration application is deployed on an EC2 instance using Apache Tomcat.
-
-The application is accessed through the EC2 public IP address.
-
-Example:
-
-http://<EC2-PUBLIC-IP>:<APPLICATION-PORT>
+This design helps keep the database isolated from direct public access.
 
 ---
 
-# Database
+## 🖥️ Application Tier
 
-Amazon RDS for MySQL is used as the database service.
+The application tier runs on an Amazon EC2 instance.
 
-The RDS database stores the student registration information submitted through the application.
+Apache Tomcat is used to host and execute the backend application.
 
-The application connects to the RDS database using its database endpoint.
+The backend logic is responsible for:
 
-The database is located in the private subnet and is not directly exposed to the public internet.
+* Receiving registration data
+* Processing the request
+* Connecting to MySQL
+* Inserting student information
+* Returning the result to the application
 
---
+---
 
-# Application Testing
+## 🗄️ Database Tier
+
+Amazon RDS for MySQL is used as the database layer.
+
+The database stores the information submitted through the student registration form.
+
+The application connects to RDS using the database endpoint.
+
+The database is deployed in the private subnet to reduce direct exposure to the internet.
+
+---
+
+## 📝 Presentation Tier
+
+The presentation tier provides the interface through which users enter their information.
+
+The student registration form collects details from the user and sends the information to the backend application.
+
+The presentation layer is responsible for user interaction, while the application tier handles the processing logic.
+
+---
+
+## 🚀 Deployment Process
+
+### 1. Create VPC
+
+Created a custom VPC for the application infrastructure.
+
+### 2. Create Subnets
+
+Configured:
+
+* Public subnet for EC2
+* Private subnet for RDS
+
+### 3. Configure Internet Gateway
+
+Configured internet connectivity for the public subnet.
+
+### 4. Launch EC2
+
+Launched an EC2 instance in the public subnet.
+
+### 5. Install Apache Tomcat
+
+Configured Apache Tomcat on the EC2 instance.
+
+### 6. Deploy Application
+
+Deployed the student registration application to Tomcat.
+
+### 7. Create RDS MySQL
+
+Created an Amazon RDS MySQL database in the private network.
+
+### 8. Configure Security Groups
+
+Configured Security Groups to allow the required communication between EC2 and RDS.
+
+### 9. Configure Database Connection
+
+Configured the backend application to connect to the RDS MySQL database.
+
+### 10. Test Application
+
+Accessed the application through the EC2 public IP and tested student registration.
+
+### 11. Verify Database
+
+Verified that submitted student information was successfully stored in RDS MySQL.
+
+---
+
+## 🧪 Testing
 
 The application was tested by:
 
-1. Accessing the application through the EC2 public IP.
-2. Opening the student registration form.
-3. Entering student information.
-4. Submitting the registration form.
-5. Verifying that the data was successfully inserted into the RDS MySQL database.
-
---
-
-# Technologies Used
-
-## Cloud
-
-* AWS
-* Amazon VPC
-* Amazon EC2
-* Amazon RDS
-
-## Application
-
-* Apache Tomcat
-* Java
-* MySQL
-
-## Networking & Security
-
-* Public Subnet
-* Private Subnet
-* Internet Gateway
-* Security Groups
-* TCP/IP
+* Accessing the application through the EC2 public IP
+* Opening the registration form
+* Entering student information
+* Submitting the form
+* Verifying successful processing
+* Checking that the student data was inserted into RDS MySQL
 
 ---
 
-## Challenges & Troubleshooting
+## 🚧 Challenges & Troubleshooting
 
-During the implementation of this project, I worked on:
+During the project, I worked on:
 
-* Creating and configuring a custom VPC
-* Configuring public and private subnets
+* Configuring the AWS VPC
+* Creating public and private subnets
 * Deploying the application on EC2
 * Installing and configuring Apache Tomcat
-* Deploying the application
-* Connecting the application to RDS MySQL
+* Connecting the backend application to RDS
 * Configuring Security Group rules
 * Troubleshooting MySQL connectivity on port 3306
-* Verifying successful data insertion into RDS
+* Verifying database insertion
+* Testing communication between EC2 and RDS
 
---
+---
 
-##  Screenshots
+## 📸 Screenshots
 
-Screenshots demonstrating the implementation will be added to the  screenshots/ directory.
+Screenshots demonstrating the project implementation will be added to the screenshots/ directory.
 
-Examples include:
+Planned screenshots:
 
 * VPC configuration
-* Subnet configuration
-* EC2 instances
+* Public subnet
+* Private subnet
+* EC2 instance
 * Security Groups
 * RDS configuration
-* Running application
-* Registered student data
+* Running registration application
+* Student registration result
+* Database records
 
 ---
 
@@ -225,24 +305,43 @@ Examples include:
 Through this project, I gained practical experience in:
 
 * AWS VPC networking
-* EC2 deployment
-* Public and private subnet configuration
-* Apache Tomcat application deployment
+* Public and private subnet architecture
+* Amazon EC2
+* Apache Tomcat
 * Amazon RDS MySQL
-* Security Group configuration
+* Security Groups
 * EC2-to-RDS connectivity
-* Database connectivity troubleshooting
-* Deploying and testing a real web application on AWS
+* Application deployment
+* Database connectivity
+* AWS troubleshooting
+* Three-tier application architecture
 
 ---
 
-# Author
+## 🛠️ Technologies Used
+
+**Cloud:** AWS
+
+**Compute:** Amazon EC2
+
+**Database:** Amazon RDS MySQL
+
+**Application Server:** Apache Tomcat
+
+**Networking:** VPC, Subnets, Internet Gateway
+
+**Security:** Security Groups
+
+**Application:** HTML/JSP, Backend Logic, MySQL
+
+---
+
+# 👨‍💻 Author
 
 Sri Harsha Akula
 
 Cloud & DevOps Engineer Aspirant
 
-Skills:AWS | Linux | Docker | Jenkins | Ansible | Git | CI/CD | Bash
+Skills:  AWS | Linux | Docker | Jenkins | Ansible | Git | CI/CD | Bash
 
---
-
+---
