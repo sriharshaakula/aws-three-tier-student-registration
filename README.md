@@ -18,7 +18,7 @@ Users access the application through the EC2 public IP. The backend processes th
 
 ## 🏗️ Architecture
 
-`
+
                          USER
                            │
                            │ HTTP
