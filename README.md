@@ -18,7 +18,7 @@ Users access the application through the EC2 public IP. The backend processes th
 
 ## 🏗️ Architecture
 
-
+```text
                          USER
                            │
                            │ HTTP
@@ -46,11 +46,11 @@ Users access the application through the EC2 public IP. The backend processes th
                 │    RDS MySQL        │
                 │    Private Subnet   │
                 └─────────────────────┘
-
+```
 
 ### AWS Infrastructure
 
-
+```text
                          Internet
                             │
                             ▼
@@ -69,7 +69,7 @@ Users access the application through the EC2 public IP. The backend processes th
                     │               │
                     │   RDS MySQL   │
                     └───────────────┘
-
+```
 
 > The three tiers are logical application layers. The presentation and application tiers run on the same EC2 instance, while the database tier is provided by Amazon RDS.
 
@@ -93,7 +93,7 @@ Users access the application through the EC2 public IP. The backend processes th
 
 The application works through the following flow:
 
-
+```text
 User
   │
   ▼
@@ -107,6 +107,7 @@ RDS MySQL
   │
   ▼
 Student Data Stored
+```
 
 ### Step-by-step
 
@@ -138,27 +139,30 @@ The database is not directly exposed to the public internet.
 
 Communication between the application server and database is controlled using Security Groups.
 
+---
+
 ## 🔐 Security Configuration
 
 Security Groups are used to control communication between the EC2 instance and RDS database.
 
 The application communicates with MySQL using:
 
+```text
 Protocol : TCP
 Port     : 3306
-
+```
 
 The RDS Security Group allows database traffic from the application server rather than allowing unrestricted access from the internet.
 
 ### Security Flow
 
-
+```text
 EC2
  │
  │ TCP 3306
  ▼
 RDS MySQL
-
+```
 
 This design helps keep the database isolated from direct public access.
 
@@ -284,7 +288,7 @@ During the project, I worked on:
 
 ## 📸 Screenshots
 
-Screenshots demonstrating the project implementation will be added to the screenshots/ directory.
+Screenshots demonstrating the project implementation will be added to the `screenshots/` directory.
 
 Planned screenshots:
 
@@ -336,12 +340,15 @@ Through this project, I gained practical experience in:
 
 ---
 
-# 👨‍💻 Author
+## 👨‍💻 Author
 
-Sri Harsha Akula
+**Sri Harsha Akula**
 
 Cloud & DevOps Engineer Aspirant
 
-Skills:  AWS | Linux | Docker | Jenkins | Ansible | Git | CI/CD | Bash
+**Skills:** AWS | Linux | Docker | Jenkins | Ansible | Git | CI/CD | Bash
 
----
+
+
+
+n before publishing the project on GitHub.
